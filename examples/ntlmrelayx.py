@@ -254,6 +254,7 @@ if __name__ == '__main__':
     parser.add_argument('-c', action='store', type=str, required=False, metavar = 'COMMAND', help='Command to execute on '
                         'target system (for SMB and RPC). If not specified for SMB, hashes will be dumped (secretsdump.py must be'
                         ' in the same directory). For RPC no output will be provided.')
+    parser.add_argument('-wmi-shell', action='store_true', default=False, help='Run interative shell using wmiexec with SMB->RPC relay.')
 
     #SMB arguments
     smboptions = parser.add_argument_group("SMB client options")
@@ -264,7 +265,7 @@ if __name__ == '__main__':
 
     #RPC arguments
     rpcoptions = parser.add_argument_group("RPC client options")
-    rpcoptions.add_argument('-rpc-mode', choices=["TSCH"], default="TSCH", help='Protocol to attack, only TSCH supported')
+    rpcoptions.add_argument('-rpc-mode', choices=["TSCH", "DCOM"], default="TSCH", help='Protocol to attack')
     rpcoptions.add_argument('-rpc-use-smb', action='store_true', required=False, help='Relay DCE/RPC to SMB pipes')
     rpcoptions.add_argument('-auth-smb', action='store', required=False, default='', metavar='[domain/]username[:password]',
         help='Use this credential to authenticate to SMB (low-privilege account)')
@@ -319,6 +320,9 @@ if __name__ == '__main__':
     if options.rpc_use_smb and not options.auth_smb:
        logging.error("Set -auth-smb to relay DCE/RPC to SMB pipes")
        sys.exit(1)
+
+    if options.wmi_shell:
+        options.rpc_mode = "DCOM"
 
     # Init the example's logger theme
     logger.init(options.ts)

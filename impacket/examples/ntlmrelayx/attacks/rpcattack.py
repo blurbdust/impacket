@@ -18,7 +18,14 @@ from impacket.dcerpc.v5 import tsch
 from impacket.dcerpc.v5.dtypes import NULL
 from impacket.examples.ntlmrelayx.attacks import ProtocolAttack
 
+from impacket.examples import wmiexec
+
 PROTOCOL_ATTACK_CLASS = "RPCAttack"
+
+class DCOMRPCAttack:
+    def _run(self):
+        pass
+
 
 class TSCHRPCAttack:
     def _xml_escape(self, data):
@@ -105,7 +112,7 @@ class TSCHRPCAttack:
         LOG.info('Completed!')
 
 
-class RPCAttack(ProtocolAttack, TSCHRPCAttack):
+class RPCAttack(ProtocolAttack, TSCHRPCAttack, DCOMRPCAttack):
     PLUGIN_NAMES = ["RPC"]
 
     def __init__(self, config, dce, username):
@@ -121,6 +128,8 @@ class RPCAttack(ProtocolAttack, TSCHRPCAttack):
         # TODO: support relaying RPC to different endpoints
         # TODO: support for providing a shell
         # TODO: support for getting an output
+        if self.config.wmi_shell is not None:
+            DCOMRPCAttack._run(self)
         if self.config.command is not None:
             TSCHRPCAttack._run(self)
         else:

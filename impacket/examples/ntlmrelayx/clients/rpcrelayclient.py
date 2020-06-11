@@ -128,6 +128,10 @@ class RPCRelayClient(ProtocolClient):
 
         if self.endpoint == "TSCH":
             self.endpoint_uuid = tsch.MSRPC_UUID_TSCHS
+        elif self.endpoint == "DCOM":
+            executer = WMIEXEC(' '.join(options.command), self.serverConfig.smbuser, self.serverConfig.smbpass, self.serverConfig.smbdomain, ':'.join(self.serverConfig.smblmhash,self.serverConfig.smbnthash), 
+                None , 'ADMIN$', False, False, None) # aesKey, share, noouput, kerberos, dc_ip
+            executer.run(target)
         else:
             raise NotImplementedError("Not implemented!")
 
